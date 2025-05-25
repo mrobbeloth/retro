@@ -74,7 +74,7 @@ int removeToDo(short id) {
     while (follow) {
         if (follow->id == id) {
             if (prev == NULL) {
-                /* Deleting the head node */
+					 /* Deleting the head node */
                 list = follow->next;
             } else {
                 prev->next = follow->next;
@@ -230,4 +230,4 @@ void loadAllToDos(char *filename) {
 	}
 	fclose(fptr);
 	return;
-}
+}

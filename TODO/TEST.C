@@ -5,7 +5,6 @@
 int main(int argc, char **argv) {
 	int i;
 	struct todoItem daItem;
-	char *cntToStr;
 	char *fullDesc=NULL;
 	char *baseStr = "Complete this beautiful task with id:";
 
@@ -19,12 +18,10 @@ int main(int argc, char **argv) {
 	init();
 
 	/* Create and display 100 test todos */
-	cntToStr = (char *) malloc(sizeof(int));
+	fullDesc = (char *) malloc(strlen(baseStr) + sizeof(int) + 1);
 	for(i = 0; i < 10; i++) {
 		sprintf(fullDesc, "%s %d", baseStr, i);
 		addToDo(i, fullDesc);
-		free(cntToStr);
-		cntToStr = (char *) malloc(sizeof(int));
 	}
 	printList();
 

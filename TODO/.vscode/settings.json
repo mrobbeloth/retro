@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "TODOAPI.C": "cpp"
+        "TODOAPI.C": "cpp",
+        "TEST.C": "cpp"
     }
 }
