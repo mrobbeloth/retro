@@ -25,7 +25,7 @@ struct todoItem * buildNodeComplex(short priority, char *description,
 	/* newItem->id = rand(); */
 	newItem->id = id;
 	newItem->priority = priority;
-	newItem->description = description;
+	newItem->description = strdup(description);
 	newItem->completed = completed;
 	newItem->next = NULL;
 
@@ -87,6 +87,7 @@ int removeToDo(short id) {
 
 		if (follow->id == id){
 			prev->next = follow->next;
+			free(follow->description);
 			free(follow);
 			return id;
 		}
@@ -99,6 +100,7 @@ int removeToDo(short id) {
 	/* Delete is the last item */
 	if (follow->id == id) {
 		prev->next = 0;
+		free(follow->description);
 		free(follow);
 		return id;
 	}
@@ -235,8 +237,7 @@ void loadAllToDos(char *filename) {
 	}
 
 	fptr = fopen(filename, "r");
-	while(fptr) {
-		fread(&id,sizeof(int),1,fptr);
+	while(fread(&id,sizeof(int),1,fptr)) {
 		fread(&priority,sizeof(int),1,fptr);
 		fread(&sizeOfDescStr,sizeof(int),1,fptr);
 		description = (char *) malloc(sizeOfDescStr);
@@ -245,6 +246,6 @@ void loadAllToDos(char *filename) {
 		newNode = buildNodeComplex(priority, description, id, completed);
 		printNode(*newNode);
 	}
-	close(fptr);
+	fclose(fptr);
 	return;
-}
+}
