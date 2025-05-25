@@ -68,43 +68,25 @@ int deleteToDo(short id) {
 }
 
 int removeToDo(short id) {
-	struct todoItem *follow, *prev;
-	follow = list;
-	prev = list;
+    struct todoItem *follow = list;
+    struct todoItem *prev = NULL;
 
-	/* Empty list, just return */
-	if (follow == NULL)
-		return -1;
-
-	/* Item to delete might be somewhere in the list
-		Iterate through it */
-	while (follow) {
-
-		/* Look at each item id, if target, remove
-			by having previous element's next field
-			point not to the node to delete, but the
-			node after it. */
-
-		if (follow->id == id){
-			prev->next = follow->next;
-			free(follow->description);
-			free(follow);
-			return id;
-		}
-
-		/* Move the pointers along to the next element */
-		prev = follow;
-		follow = follow->next;
-	}
-
-	/* Delete is the last item */
-	if (follow->id == id) {
-		prev->next = 0;
-		free(follow->description);
-		free(follow);
-		return id;
-	}
-	return -2;
+    while (follow) {
+        if (follow->id == id) {
+            if (prev == NULL) {
+                /* Deleting the head node */
+                list = follow->next;
+            } else {
+                prev->next = follow->next;
+            }
+            free(follow->description);
+            free(follow);
+            return id;
+        }
+        prev = follow;
+        follow = follow->next;
+    }
+    return -2;
 }
 
 struct todoItem returnItem(int id) {

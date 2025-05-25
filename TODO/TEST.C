@@ -5,6 +5,9 @@
 int main(int argc, char **argv) {
 	int i;
 	struct todoItem daItem;
+	char *cntToStr;
+	char *fullDesc=NULL;
+	char *baseStr = "Complete this beautiful task with id:";
 
 	/* Use argc/argv so compiler doesn't complain */
 	printf("%d %s\n", argc, " arguments entered at prompt");
@@ -16,8 +19,12 @@ int main(int argc, char **argv) {
 	init();
 
 	/* Create and display 100 test todos */
+	cntToStr = (char *) malloc(sizeof(int));
 	for(i = 0; i < 10; i++) {
-		addToDo(i, "Complete this beautiful task!\0");
+		sprintf(fullDesc, "%s %d", baseStr, i);
+		addToDo(i, fullDesc);
+		free(cntToStr);
+		cntToStr = (char *) malloc(sizeof(int));
 	}
 	printList();
 
