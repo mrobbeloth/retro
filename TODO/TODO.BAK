@@ -1,0 +1,26 @@
+#ifndef TODO_H
+#define TODO_H
+
+struct todoItem{
+	int id;
+	short priority;
+	char *description;
+	char completed;
+	struct todoItem *next;
+};
+
+void printNode(struct todoItem);
+struct todoItem * buildNodeComplex(short, char*, id, char);
+struct todoItem * buildNode(short, char*);
+int addToDo(short, char*);
+int removeToDo(short);
+int deleteToDo(short);
+struct todoItem returnItem(int);
+void init();
+void printList();
+int countNumberOfElements();
+void exportToDosToCSV(char *filename);
+void saveAllToDos(char *filename);
+void loadAllToDos(char *filename);
+
+#endif
