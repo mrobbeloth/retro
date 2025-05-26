@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "todo.h"
 
 int main(int argc, char **argv) {
@@ -21,7 +22,7 @@ int main(int argc, char **argv) {
 	fullDesc = (char *) malloc(strlen(baseStr) + sizeof(int) + 1);
 	for(i = 0; i < 10; i++) {
 		sprintf(fullDesc, "%s %d", baseStr, i);
-		addToDo(i, fullDesc);
+		addToDo(i, fullDesc, time(NULL));
 	}
 	printList();
 
@@ -41,5 +42,7 @@ int main(int argc, char **argv) {
 
 	/* reset todo list */
 	init();
+	loadAllToDos("michael.bin");
+	printList();
 	return 0;
 }

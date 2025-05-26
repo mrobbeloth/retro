@@ -1,21 +1,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 #include "todo.h"
 
 static struct todoItem *list;
 
 void printNode(struct todoItem node) {
-	printf("ID:%d Priority:%d Description:%s Completed:%c\n",
+	printf("ID:%d Priority:%d Description:%s Completed:%c Due Date=%s\n",
 			 node.id,
 			 node.priority,
 			 node.description,
-			 node.completed);
+			 node.completed,
+			 ctime(&node.due_date));
 	return;
 }
 
 struct todoItem * buildNodeComplex(short priority, char *description,
-											  int id, char completed) {
+											  int id, char completed, time_t due_date) {
 
 	struct todoItem *newItem;
 
@@ -27,40 +29,28 @@ struct todoItem * buildNodeComplex(short priority, char *description,
 	newItem->priority = priority;
 	newItem->description = strdup(description);
 	newItem->completed = completed;
+	newItem->due_date = due_date;
 	newItem->next = NULL;
 
 	return newItem;
 }
 
-struct todoItem * buildNode(short priority, char *description) {
+struct todoItem * buildNode(short priority, char *description,
+									 time_t due_date) {
 	static int id = 0;
-	return buildNodeComplex(priority, description, id++, 'F');
+	return buildNodeComplex(priority, description, id++, 'F', due_date);
 }
 
-int addToDo(short priority, char *description) {
-	struct todoItem *newItem, *follow;
+int addToDo(short priority, char *description, time_t due_date) {
+	struct todoItem *newItem;
 
-	newItem = buildNode(priority, description);
+	newItem = buildNode(priority, description, due_date);
 
 	if(newItem == NULL) {
 		return -1;
 	}
 
-	/* Empty list, add to beginning */
-	if (list == NULL) {
-		list = newItem;
-	}
-	else {
-
-		/* Add to the end of the list think about sorting routines in the
-			future*/
-		follow = list;
-		while(follow->next) {
-			follow = follow->next;
-		}
-		follow->next = newItem;
-	}
-	return newItem->id;
+	insertBeginningList(newItem);
 }
 
 int deleteToDo(short id) {
@@ -170,11 +160,12 @@ void exportToDosToCSV(char *filename){
 
 	follow = list;
 	while(follow) {
-		fprintf(fptr, "%d,%d,%s,%c\n",
+		fprintf(fptr, "%d,%d,%s,%c,%s\n",
 				  follow->id,
 				  follow->priority,
 				  follow->description,
-				  follow->completed);
+				  follow->completed,
+				  ctime(&(follow->due_date)));
 		follow = follow->next;
 	}
 
@@ -197,6 +188,7 @@ void saveAllToDos(char *filename) {
 		fwrite(&sizeOfDescToWrite, sizeof(int), 1, fptr);
 		fwrite(follow->description,sizeOfDescToWrite,1,fptr);
 		fwrite(&(follow->completed),sizeof(char),1,fptr);
+		fwrite(&(follow->due_date), sizeof(time_t), 1, fptr);
 
 		follow = follow->next;
 	}
@@ -204,6 +196,29 @@ void saveAllToDos(char *filename) {
 
 	fclose(fptr);
 	return;
+}
+int insertBeginningList(struct todoItem *newItem) {
+	struct todoItem *follow;
+
+	if(newItem == NULL) {
+		return -1;
+	}
+
+	/* Empty list, add to beginning */
+	if (list == NULL) {
+		list = newItem;
+	}
+	else {
+
+		/* Add to the end of the list think about sorting routines in the
+			future*/
+		follow = list;
+		while(follow->next) {
+			follow = follow->next;
+		}
+		follow->next = newItem;
+	}
+	return newItem->id;
 }
 
 void loadAllToDos(char *filename) {
@@ -213,6 +228,7 @@ void loadAllToDos(char *filename) {
 	char *description;
 	short priority;
 	char completed;
+	time_t due_date;
 
 	if (list != NULL) {
 		init();
@@ -225,7 +241,10 @@ void loadAllToDos(char *filename) {
 		description = (char *) malloc(sizeOfDescStr);
 		fread(description,sizeOfDescStr,1,fptr);
 		fread(&completed,sizeof(char),1,fptr);
-		newNode = buildNodeComplex(priority, description, id, completed);
+		fread(&due_date, sizeof(time_t), 1, fptr);
+		newNode = buildNodeComplex(priority, description, id, completed,
+					 due_date);
+		insertBeginningList(newNode);
 		printNode(*newNode);
 	}
 	fclose(fptr);
